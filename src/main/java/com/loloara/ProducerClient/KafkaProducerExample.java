@@ -30,8 +30,8 @@ public class KafkaProducerExample {
 		final CountDownLatch countDownLatch = new CountDownLatch(sendMessageCount);
 		
 		try {
-			for(long index = time; index < time+sendMessageCount;index++) {
-				final ProducerRecord<Long, String> record = new ProducerRecord<Long, String>(TOPIC, index, "I want that car "+index);
+			for(long index = 0; index < sendMessageCount;index++) {
+				final ProducerRecord<Long, String> record = new ProducerRecord<Long, String>(TOPIC, index, "I want that car number "+index);
 				producer.send(record, (metadata, exception) -> {
 					long elapsedTime = System.currentTimeMillis() - time;
 					if(metadata != null) {
