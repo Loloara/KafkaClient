@@ -33,7 +33,7 @@ public class ProducerClient {
 					long elapsedTime = System.currentTimeMillis() - time;
 					if(metadata != null) {
 						System.out.println("sent record(key=" + record.key() + " value=" + record.value() + ") "
-								+ "meta(partition=" + metadata.partition() + " offset=" + metadata.offset() + " time=" + elapsedTime);
+								+ "meta:(partition=" + metadata.partition() + " offset=" + metadata.offset() + " time=" + elapsedTime);
 					}else {
 						exception.printStackTrace();
 					}

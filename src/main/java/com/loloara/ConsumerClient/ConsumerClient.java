@@ -44,7 +44,8 @@ public class ConsumerClient {
 			}
 			
 			consumerRecords.forEach(record -> {
-				System.out.println("Consumer Record: (" + record.key() + ", " + record.value() + ", " + record.partition() + ", " + record.offset() + ")");
+				System.out.println("get record:(key=" + record.key() + " value=" + record.value() + ") "
+						+ "meta:(partition=" + record.partition() + " offset=" + record.offset() + ")");
 			});
 			consumer.commitAsync();
 		}
