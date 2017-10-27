@@ -6,9 +6,13 @@ import org.apache.kafka.common.serialization.StringDeserializer;
 import java.util.Properties;
 import java.util.Collections;
 
-public class KafkaConsumerExample {
-	private final static String TOPIC = "cluser";
-	private final static String BOOTSTRAP_SERVERS = "kafka-01:9092, kafka-02:9092, kafka-03:9092";	
+public class ConsumerClient {
+	private static String TOPIC;
+	private final static String BOOTSTRAP_SERVERS = "kafka-01:9092, kafka-02:9092, kafka-03:9092";
+	
+	ConsumerClient(final String TOPIC){
+		ConsumerClient.TOPIC = TOPIC;
+	}
 	
 	//Long, String type Consumer 생성
 	private static Consumer<Long, String> createConsumer(){
@@ -26,7 +30,7 @@ public class KafkaConsumerExample {
 		return consumer;
 	}
 	
-	static void runConsumer() throws InterruptedException{
+	public void runConsumer() throws InterruptedException{
 		final Consumer<Long, String> consumer = createConsumer();
 		final int giveUp = 100;
 		int noRecordsCount = 0;
@@ -47,10 +51,4 @@ public class KafkaConsumerExample {
 		consumer.close();
 		System.out.println("DONE");
 	}
-	
-	public static void main(String[] args) throws Exception {
-		System.out.println("I'm Consumer");
-		runConsumer();
-	}
-
 }
