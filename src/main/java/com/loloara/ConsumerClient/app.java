@@ -4,8 +4,8 @@ public class app {
 
 	public static void main(String[] args) throws Exception{
 		System.out.println("I'm Consumer");
-		
-		ConsumerClient consumer = new ConsumerClient("cluser");
+		final String TOPIC = "weather";
+		ConsumerClient consumer = new ConsumerClient(TOPIC);
 		consumer.runConsumer();
 	}
 
