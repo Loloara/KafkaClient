@@ -13,20 +13,20 @@ import org.json.simple.JSONObject;
 
 public class ProducerClient implements Job{
 	private final static String TOPIC = "weather";
-	private final static String BOOTSTRAP_SERVERS = "kafka-01:9092,kafka-02:9092,kafka-03:9092";
+	//private final static String BOOTSTRAP_SERVERS = "kafka-01:9092,kafka-02:9092,kafka-03:9092";
+	private final static String BOOTSTRAP_SERVERS = "kafka:8001,kafka:8002,kafka:8003";
 	//private final static String BOOTSTRAP_SERVERS = "222.233.239.128:8001, 222.233.239.128:8002";
 	//private final static String BOOTSTRAP_SERVERS = "54.175.21.137:8001, 54.175.21.137:8002";
 	
 	public void execute(JobExecutionContext context) {
-		ProducerClient producer = new ProducerClient();
 		ForecastTown forecast = new ForecastTown();
 		try {
-			producer.runProducer(TOPIC, forecast.getTownForecastFromJSON());
+			runProducer(TOPIC, forecast.getTownForecastFromJSON());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-		
+	
 	//Long, String type Producer 생성
 	private static Producer<String, Double> createProducer(){
 		Properties props = new Properties();

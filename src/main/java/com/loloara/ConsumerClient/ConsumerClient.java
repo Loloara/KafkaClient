@@ -8,7 +8,8 @@ import java.util.Collections;
 
 public class ConsumerClient {
 	private static String TOPIC;
-	private final static String BOOTSTRAP_SERVERS = "kafka-01:9092,kafka-02:9092";
+	//private final static String BOOTSTRAP_SERVERS = "kafka-01:9092,kafka-02:9092,kafka-03:9092";
+	private final static String BOOTSTRAP_SERVERS = "kafka:8001,kafka:8002,kafka:8003";
 	//private final static String BOOTSTRAP_SERVERS = "54.175.21.137:8001, 54.175.21.137:8002";
 	//private final static String BOOTSTRAP_SERVERS = "222.233.239.128:8001, 222.233.239.128:8002";
 	
@@ -17,7 +18,7 @@ public class ConsumerClient {
 	}
 
 	//Long, String type Consumer 생성
-	private static Consumer<Long, String> createConsumer(){
+	private static Consumer<String, Double> createConsumer(){
 		final Properties props = new Properties();
 		props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, BOOTSTRAP_SERVERS);
 		props.put(ConsumerConfig.GROUP_ID_CONFIG, "KafkaExampleConsumer");
@@ -26,7 +27,7 @@ public class ConsumerClient {
 		//Producer Client와는 다르게 key와 value를 Deserializer로 세팅한다.
 		
 		//create the consumer using props
-		final Consumer<Long, String> consumer = new KafkaConsumer<Long, String>(props);
+		final Consumer<String, Double> consumer = new KafkaConsumer<String, Double>(props);
 		
 		//Topic을 구독
 		consumer.subscribe(Collections.singletonList(TOPIC));		
@@ -34,19 +35,19 @@ public class ConsumerClient {
 	}
 	
 	public void runConsumer() throws InterruptedException{
-		final Consumer<Long, String> consumer = createConsumer();
+		final Consumer<String, Double> consumer = createConsumer();
 		final int giveUp = 100;		//값이 안들어왔을 때 몇초 동안 기다릴지 설정
 		int noRecordsCount = 0;
 		
 		while(true) {
-			final ConsumerRecords<Long, String> consumerRecords = consumer.poll(1000);
+			final ConsumerRecords<String, Double> consumerRecords = consumer.poll(1000);
 			if(consumerRecords.count()==0) {
 				//noRecordsCount++; never give up
 				if(noRecordsCount > giveUp) break;
 				else continue;
 			}
 			
-			consumerRecords.forEach(record -> {//받은 record를 비동기로 출력해준다.
+			consumerRecords.forEach(record -> {		//받은 record를 비동기로 출력해준다.
 				System.out.println("get record:(key=" + record.key() + " value=" + record.value() + ") "
 						+ "meta:(partition=" + record.partition() + " offset=" + record.offset() + ")");
 			});
