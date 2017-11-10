@@ -40,6 +40,17 @@ public class ForecastTown{
         String baseString = sdf.format(baseDate.getTime());
         String strBaseDate = baseString.substring(0, 8);
         String strBaseTime = baseString.substring(8);
+        strBaseTime = "0919";
+        int intBaseTime = Integer.parseInt(strBaseTime);
+        if((intBaseTime % 100) <= 20) {
+        	System.out.println("20분이하");
+        	intBaseTime = (((intBaseTime / 100) - 1)* 100 + intBaseTime % 100);
+        	strBaseTime = String.valueOf(intBaseTime);
+        	if(intBaseTime < 1000)
+        		strBaseTime = "0"+strBaseTime;
+        	System.out.println(strBaseTime);
+        }
+        
         //strBaseDate = "20171101"
         //strBaseTime = "0640"
         

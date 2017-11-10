@@ -8,9 +8,8 @@ import java.util.Collections;
 
 public class ConsumerClient {
 	private static String TOPIC;
-	//private final static String BOOTSTRAP_SERVERS = "kafka-01:9092,kafka-02:9092,kafka-03:9092";
-	private final static String BOOTSTRAP_SERVERS = "kafka:8001,kafka:8002,kafka:8003";
-	//private final static String BOOTSTRAP_SERVERS = "54.175.21.137:8001, 54.175.21.137:8002";
+	private final static String BOOTSTRAP_SERVERS = "kafka-01:9092,kafka-02:9092,kafka-03:9092";
+	//private final static String BOOTSTRAP_SERVERS = "192.168.10.221:9092,192.168.10.222:9092,192.168.10.223:9092";
 	//private final static String BOOTSTRAP_SERVERS = "222.233.239.128:8001, 222.233.239.128:8002";
 	
 	ConsumerClient(final String TOPIC){
@@ -21,11 +20,11 @@ public class ConsumerClient {
 	private static Consumer<String, Double> createConsumer(){
 		final Properties props = new Properties();
 		props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, BOOTSTRAP_SERVERS);
-		props.put(ConsumerConfig.GROUP_ID_CONFIG, "KafkaExampleConsumer");
+		props.put(ConsumerConfig.GROUP_ID_CONFIG, "NowWeather");
 		props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
 		props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, DoubleDeserializer.class.getName());
 		//Producer Client와는 다르게 key와 value를 Deserializer로 세팅한다.
-		
+			
 		//create the consumer using props
 		final Consumer<String, Double> consumer = new KafkaConsumer<String, Double>(props);
 		

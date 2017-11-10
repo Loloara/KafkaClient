@@ -22,7 +22,7 @@ public class app {
 		   JobDetail job = new JobDetail("job", "group", ProducerClient.class);
 		   // Job 생성 (Parameter : 1.Job Name, 2.Job Group Name, 3.Job Class)
 		   
-		   CronTrigger trigger = new CronTrigger("trigger", "group", "0 0/1 * * * ?");
+		   CronTrigger trigger = new CronTrigger("trigger", "group", "0 0/1 * * * ?");		//매 21분마다 기상청 업데이트(00~20분 사이에는 조회 안됨)
 		   // Trigger 생성 (Parameter : 1.Trigger Name, 2.Trigger Group Name, 3.Cron Expression)
 		   
 		   trigger.setMisfireInstruction(CronTrigger.MISFIRE_INSTRUCTION_DO_NOTHING);

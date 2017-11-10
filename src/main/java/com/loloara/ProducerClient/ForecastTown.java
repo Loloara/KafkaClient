@@ -40,6 +40,16 @@ public class ForecastTown{
         String baseString = sdf.format(baseDate.getTime());
         String strBaseDate = baseString.substring(0, 8);
         String strBaseTime = baseString.substring(8);
+        int intBaseTime = Integer.parseInt(strBaseTime);
+        
+        if((intBaseTime % 100) <= 20) {
+        	intBaseTime = (((intBaseTime / 100) - 1)* 100 + intBaseTime % 100);
+        	strBaseTime = String.valueOf(intBaseTime);
+        	if(intBaseTime < 1000)
+        		strBaseTime = "0"+strBaseTime;
+        	System.out.println("기상청 날씨가 아직 업데이트 되지 않아 1시간 전 날씨를 가져옵니다.");
+        }
+        
         //strBaseDate = "20171101"
         //strBaseTime = "0640"
         

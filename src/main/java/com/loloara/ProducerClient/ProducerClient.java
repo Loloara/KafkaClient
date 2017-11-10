@@ -13,10 +13,9 @@ import org.json.simple.JSONObject;
 
 public class ProducerClient implements Job{
 	private final static String TOPIC = "weather";
-	//private final static String BOOTSTRAP_SERVERS = "kafka-01:9092,kafka-02:9092,kafka-03:9092";
-	private final static String BOOTSTRAP_SERVERS = "kafka:8001,kafka:8002,kafka:8003";
+	private final static String BOOTSTRAP_SERVERS = "kafka-01:9092,kafka-02:9092,kafka-03:9092";
+	//private final static String BOOTSTRAP_SERVERS = "192.168.10.221:9092,192.168.10.222:9092,192.168.10.223:9092";
 	//private final static String BOOTSTRAP_SERVERS = "222.233.239.128:8001, 222.233.239.128:8002";
-	//private final static String BOOTSTRAP_SERVERS = "54.175.21.137:8001, 54.175.21.137:8002";
 	
 	public void execute(JobExecutionContext context) {
 		ForecastTown forecast = new ForecastTown();
@@ -31,10 +30,12 @@ public class ProducerClient implements Job{
 	private static Producer<String, Double> createProducer(){
 		Properties props = new Properties();
 		props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, BOOTSTRAP_SERVERS);
-		props.put(ProducerConfig.CLIENT_ID_CONFIG, "KafkaExampleProducer");	//임의의 Client ID
+		props.put(ProducerConfig.CLIENT_ID_CONFIG, "NowWeather");	//임의의 Client ID
 		props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());		//key 값 타입 설정
 		props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, DoubleSerializer.class.getName());	//value 값 타입 설정
-				
+		
+		props.put(ProducerConfig.LINGER_MS_CONFIG, 25);
+		
 		return new KafkaProducer<String, Double>(props);
 	}
 	
