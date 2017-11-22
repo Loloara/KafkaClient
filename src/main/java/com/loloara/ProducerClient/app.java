@@ -2,6 +2,7 @@ package com.loloara.ProducerClient;
 
 import java.text.ParseException;
 import org.quartz.CronTrigger;
+import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
@@ -22,7 +23,10 @@ public class app {
 		   JobDetail job = new JobDetail("job", "group", ProducerClient.class);
 		   // Job 생성 (Parameter : 1.Job Name, 2.Job Group Name, 3.Job Class)
 		   
-		   CronTrigger trigger = new CronTrigger("trigger", "group", "0 0/1 * * * ?");		//매 21분마다 기상청 업데이트(00~20분 사이에는 조회 안됨)
+		   JobDataMap jobDataMap = job.getJobDataMap(); //job은 실행마다 생성되고 실행이 끝나면 삭제되기 때문에
+		   jobDataMap.put("sinceId", 0L);	//이 작업을 해야 맴버 변수처럼 관리할 수 있다.
+		   
+		   CronTrigger trigger = new CronTrigger("trigger", "group", "0 0/1 * * * ?");		//매 분마다 Tweets 요청
 		   // Trigger 생성 (Parameter : 1.Trigger Name, 2.Trigger Group Name, 3.Cron Expression)
 		   
 		   trigger.setMisfireInstruction(CronTrigger.MISFIRE_INSTRUCTION_DO_NOTHING);
