@@ -1,2 +1,2 @@
 # KafkaClient
-Producer side & Consumer side integration example
+Producer & Consumer integrated client source code
