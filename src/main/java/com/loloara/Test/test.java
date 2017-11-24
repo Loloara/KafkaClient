@@ -4,7 +4,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 public class test {
-	private static long sinceId = 933143700569333760L;
+	private static long sinceId = 933225613778812929L;
 	public static void main(String[] args) {
 		TwitterSearch twitter = new TwitterSearch();
 		String query = "#twice";
