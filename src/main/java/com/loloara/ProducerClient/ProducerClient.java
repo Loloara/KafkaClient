@@ -15,16 +15,15 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 public class ProducerClient implements Job{
-	private final static String TOPIC = "Tweets";
-	private final static String BOOTSTRAP_SERVERS = "kafka-01:9092,kafka-02:9092,kafka-03:9092";
-	private final String query = "#twice";
+	private final String TOPIC = "유아인";
+	private final String BOOTSTRAP_SERVERS = "kafka-01:9092,kafka-02:9092,kafka-03:9092";
 	
 	public void execute(JobExecutionContext context) {
 		JobDataMap jobDataMap = context.getJobDetail().getJobDataMap();
 		long sinceId = jobDataMap.getLong("sinceId");
 		
 		TwitterSearch twitter = new TwitterSearch();
-		JSONArray tweets = twitter.runSearchingKeyword(query, sinceId);
+		JSONArray tweets = twitter.runSearchingKeyword(TOPIC, sinceId);
 		if(tweets.size() == 0)
 			return;
 		sinceId = (long) ((JSONObject) tweets.get(0)).get("id");
@@ -40,7 +39,7 @@ public class ProducerClient implements Job{
 	}
 	
 	//Long, String type Producer 생성
-	private static Producer<Long, String> createProducer(){
+	private Producer<Long, String> createProducer(){
 		Properties props = new Properties();
 		props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, BOOTSTRAP_SERVERS);
 		props.put(ProducerConfig.CLIENT_ID_CONFIG, TOPIC);	//임의의 Client ID

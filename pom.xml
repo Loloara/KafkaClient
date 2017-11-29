@@ -68,6 +68,11 @@
 		<artifactId>twitter4j-stream</artifactId>
 		<version>4.0.6</version>
 	</dependency>
+	<dependency>
+		<groupId>kr.bydelta</groupId>
+		<artifactId>koalanlp-twitter_2.12</artifactId>
+		<version>1.8.4</version>
+	</dependency>
   </dependencies>
   
   <build>
