@@ -2,6 +2,7 @@ package com.loloara.Test;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -11,7 +12,7 @@ import kr.bydelta.koala.data.Word;
 import kr.bydelta.koala.twt.Tagger;
 
 public class test {
-	private static long sinceId = 933225613778812929L;
+	private static long sinceId = 0L;
 	public static void twitterTest() {
 		TwitterSearch twitter = new TwitterSearch();
 		String query = "#twice";
@@ -64,7 +65,25 @@ public class test {
          System.out.println(result);
 	}
 	
+	public static void mysqlTest() {
+		System.out.println("MySQL Test");
+		MySQLConn mysql = new MySQLConn();
+		System.out.println("keyword: "+mysql.getKeyword());
+	}
+	
+	public static void propertiesTest() {
+		DBProperties dbp = new DBProperties();
+		dbp.setProperties();
+		Properties prop = dbp.getProperties();
+		System.out.println("URL: "+prop.getProperty("URL"));
+		System.out.println("USERNAME: "+prop.getProperty("USERNAME"));
+		System.out.println("PASSWORD: "+prop.getProperty("PASSWORD"));
+	}
+	
 	public static void main(String[] args) {
-		koalaTest();
+		//koalaTest();
+		//twitterTest();
+		//mysqlTest();
+		propertiesTest();
 	}
 }

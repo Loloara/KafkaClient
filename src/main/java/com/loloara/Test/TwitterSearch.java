@@ -3,6 +3,8 @@ package com.loloara.Test;
 import twitter4j.*;
 import twitter4j.conf.ConfigurationBuilder;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import org.json.simple.JSONArray;
@@ -23,11 +25,16 @@ public class TwitterSearch {
 	public JSONArray runSearchingKeyword(String q, long sinceId) {
 		Twitter twitter = new TwitterFactory(cb.build()).getInstance();		
 		JSONArray tweets = new JSONArray();
+		Date date = new Date();
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		String since = sdf.format(date);
+		
 		try {
 			Query query = new Query(q);
 			query.setResultType(Query.RECENT);
 			query.setCount(100);
 			query.setMaxId(Long.MAX_VALUE);
+			query.setSince(since);
 			QueryResult result;
 			
 			do {

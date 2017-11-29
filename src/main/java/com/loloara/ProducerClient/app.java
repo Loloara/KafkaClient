@@ -25,6 +25,7 @@ public class app {
 		   
 		   JobDataMap jobDataMap = job.getJobDataMap(); //job은 실행마다 생성되고 실행이 끝나면 삭제되기 때문에
 		   jobDataMap.put("sinceId", 0L);	//이 작업을 해야 맴버 변수처럼 관리할 수 있다.
+		   jobDataMap.put("query", "");
 		   
 		   CronTrigger trigger = new CronTrigger("trigger", "group", "0 0/1 * * * ?");		//매 분마다 Tweets 요청
 		   // Trigger 생성 (Parameter : 1.Trigger Name, 2.Trigger Group Name, 3.Cron Expression)
