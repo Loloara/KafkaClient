@@ -1,4 +1,4 @@
 target/
 /*.jar
 .settings/
-.properties
+*.properties
