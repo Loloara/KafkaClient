@@ -48,26 +48,57 @@ public class MySQLConn {
 		}
 	}
 	
-	public String getKeyword() {
-		String sql = "select * from Keyword_History where status = 'y';";
-		String keywords="";
+	public String[] getKeyword() {
+		String sql1 = "select * from Keyword_History where status = 'y';";
+		String sql2 = "select keyword, seq, sinceId from Keyword_History order by seq desc limit 1000;";
+		String[] keywords = new String[3];
+		keywords[0] = "test";
+		keywords[1] = "1";
+		keywords[2] = "0";
 		try {
-			ResultSet rs = stmt.executeQuery(sql);
-			while(rs.next()) {
-				keywords += rs.getString("keyword") + " ";
-			}
-			keywords = keywords.trim();
+			ResultSet rs1 = stmt.executeQuery(sql1);
+			rs1.next();
+			keywords[0] = rs1.getString("keyword");
+			keywords[1] = Integer.toString(rs1.getInt("seq"));
+			rs1.close();
 			
-			rs.close();
-			stmt.close();
-			conn.close();
-
-			return keywords;
+			ResultSet rs2 = stmt.executeQuery(sql2);
+			while(rs2.next()) {
+				if(keywords[0].equals(rs2.getString("keyword"))) {
+					keywords[2] = Long.toString(rs2.getLong("sinceId"));
+					break;
+				}
+			}
+			rs2.close();
+			
 		}catch(SQLException e) {
 			e.printStackTrace();
-		}finally{
-			
 		}
-		return "test";
+
+		return keywords;
+	}
+	
+	
+	public void addCountSinceIdToKeyword(int count, int seq, long sinceId) {
+		StringBuilder sb = new StringBuilder();
+		String sql = sb.append("update KCC_LAB.Keyword_History set tweets = tweets + ")
+				.append(count)
+				.append(", sinceId = ")
+				.append(sinceId)
+				.append(" WHERE  seq=")
+				.append(seq)
+				.append(";").toString();
+		try {
+			stmt.executeUpdate(sql);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if(stmt != null) stmt.close();
+				if(conn != null) conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 }

@@ -11,8 +11,14 @@
 
     <logger name="org.apache.kafka" level="INFO"/>
     <logger name="org.apache.kafka.common.metrics" level="INFO"/>
+    <logger name="org.apache.spark" level="INFO"/>
+    <logger name="org.apache.hadoop" level="INFO"/>
+    <logger name="org.apache.hadoop.hbase" level="ERROR"/>
 
-    <root level="debug">
+    <root level="INFO">
+        <appender-ref ref="STDOUT" />
+    </root>
+    <root level="ERROR">
         <appender-ref ref="STDOUT" />
     </root>
 </configuration>

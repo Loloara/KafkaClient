@@ -44,7 +44,9 @@ public class TwitterSearch {
 					long lastId = (long) lastObj.get("id");;
 					query.setMaxId(lastId - 1L);
 				}
+
 				result = twitter.search(query);
+				
 				for(int i=0;i<result.getTweets().size();i++) {
 					List<Status> tweetList = result.getTweets();
 					Status tweetStatus = tweetList.get(i);
@@ -61,6 +63,8 @@ public class TwitterSearch {
 			System.out.println("Failed to search tweets: " + e.getMessage());
 			
 			return tweets;
+		}catch(Exception e) {
+			e.printStackTrace();
 		}
 		return tweets;
 	}

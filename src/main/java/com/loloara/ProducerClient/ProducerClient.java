@@ -16,38 +16,27 @@ import org.json.simple.JSONObject;
 public class ProducerClient implements Job{
 	private final String TOPIC = "Tweets";
 	private final String BOOTSTRAP_SERVERS = "kafka-01:9092,kafka-02:9092,kafka-03:9092";
-	private String query;
+	private String[] query;	//0: keyword, 1: seq, 2: sinceId
 	
 	public void execute(JobExecutionContext context) {
 		MySQLConn mysql = new MySQLConn();
 		query = mysql.getKeyword();
-
-		JobDataMap jobDataMap = context.getJobDetail().getJobDataMap();
-		long sinceId;
-		if(jobDataMap.getString("query") == "")
-			sinceId = 0L;
-		else {
-			if(query.equals(jobDataMap.getString("query")))
-				sinceId = jobDataMap.getLong("sinceId");
-			else
-				sinceId = 0L;
-		}
+		long sinceId = Long.parseLong(query[2]);
 		
 		TwitterSearch twitter = new TwitterSearch();
-		JSONArray tweets = twitter.runSearchingKeyword(query, sinceId);
-		if(tweets.size() == 0)
-			return;
-		sinceId = (long) ((JSONObject) tweets.get(0)).get("id");
-		jobDataMap.put("sinceId", sinceId);
-		jobDataMap.put("query", query);
+		JSONArray tweets = twitter.runSearchingKeyword(query[0], sinceId);
+		if(tweets.size() != 0) {
+			sinceId = (Long) ((JSONObject) tweets.get(0)).get("id");
+		}
+		
 		try {
 			runProducer(TOPIC, tweets);
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally{
-			System.out.println("keyword: " + query);
+			System.out.println("keyword: " + query[0] + "-" + query[1]);
 			System.out.println("tweets length: " + tweets.size());
-			
+			mysql.addCountSinceIdToKeyword(tweets.size(), Integer.parseInt(query[1]), sinceId);
 		}
 	}
 	
@@ -76,7 +65,7 @@ public class ProducerClient implements Job{
 		try {
 			for(int i = 0; i < items.size();i++) {
 				obj = (JSONObject) items.get(i);
-				key = query+"-"+Long.toString((long) obj.get("id"));
+				key = query[0]+"-"+query[1]+"-"+Long.toString((long) obj.get("id"));
 				value = (String) obj.get("text");
 				
 				
