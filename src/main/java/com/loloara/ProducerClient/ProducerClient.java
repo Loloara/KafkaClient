@@ -3,11 +3,14 @@ package com.loloara.ProducerClient;
 import org.apache.kafka.clients.producer.*;
 import org.apache.kafka.common.serialization.StringSerializer;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 import java.util.Properties;
 import java.util.concurrent.CountDownLatch;		//비동기 처리를 위한 라이브러리
 import java.util.concurrent.TimeUnit; 
 import org.quartz.Job;
-import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 
 import org.json.simple.JSONArray;
@@ -22,11 +25,25 @@ public class ProducerClient implements Job{
 		MySQLConn mysql = new MySQLConn();
 		query = mysql.getKeyword();
 		long sinceId = Long.parseLong(query[2]);
+		Date sinceDate = null;
+		Date latelyDate = null;
+		Date beforeSinceDate = null;
+		SimpleDateFormat sdf= new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy",Locale.US);
 		
 		TwitterSearch twitter = new TwitterSearch();
 		JSONArray tweets = twitter.runSearchingKeyword(query[0], sinceId);
 		if(tweets.size() != 0) {
 			sinceId = (Long) ((JSONObject) tweets.get(0)).get("id");
+			sinceDate = (Date) ((JSONObject) tweets.get(tweets.size()-1)).get("date");
+			try {
+				beforeSinceDate = sdf.parse(query[3]);
+			} catch (ParseException e) {
+				e.printStackTrace();
+			}
+			if(sinceDate.compareTo(beforeSinceDate)==1) {
+				sinceDate = beforeSinceDate;
+			}
+			latelyDate = (Date) ((JSONObject) tweets.get(0)).get("date");
 		}
 		
 		try {
@@ -36,7 +53,9 @@ public class ProducerClient implements Job{
 		} finally{
 			System.out.println("keyword: " + query[0] + "-" + query[1]);
 			System.out.println("tweets length: " + tweets.size());
-			mysql.addCountSinceIdToKeyword(tweets.size(), Integer.parseInt(query[1]), sinceId);
+			System.out.println("since: " + sinceDate);
+			System.out.println("lately: " + latelyDate);
+			mysql.updateKeywordHistory(tweets.size(), Integer.parseInt(query[1]), sinceId, sinceDate, latelyDate);
 		}
 	}
 	
@@ -48,7 +67,8 @@ public class ProducerClient implements Job{
 		props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());		//key 값 타입 설정
 		props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());	//value 값 타입 설정
 		
-		props.put(ProducerConfig.BATCH_SIZE_CONFIG, 10000);
+		props.put(ProducerConfig.BATCH_SIZE_CONFIG, 51200);
+		props.put(ProducerConfig.COMPRESSION_TYPE_CONFIG, "snappy");
 		
 		return new KafkaProducer<String, String>(props);
 	}

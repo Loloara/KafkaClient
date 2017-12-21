@@ -10,6 +10,8 @@ import java.util.List;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+
+
 public class TwitterSearch {
 	private ConfigurationBuilder cb;
 	
@@ -25,16 +27,10 @@ public class TwitterSearch {
 	public JSONArray runSearchingKeyword(String q, long sinceId) {
 		Twitter twitter = new TwitterFactory(cb.build()).getInstance();		
 		JSONArray tweets = new JSONArray();
-		Date date = new Date();
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-		String since = sdf.format(date);
-		
 		try {
 			Query query = new Query(q);
 			query.setResultType(Query.RECENT);
 			query.setCount(100);
-			query.setMaxId(Long.MAX_VALUE);
-			query.setSince(since);
 			QueryResult result;
 			
 			do {
@@ -42,11 +38,9 @@ public class TwitterSearch {
 				if(tweets.size() != 0) {
 					JSONObject lastObj = (JSONObject) tweets.get(tweets.size()-1);
 					long lastId = (long) lastObj.get("id");;
-					query.setMaxId(lastId - 1L);
+					query.setMaxId(lastId-1L);
 				}
-
 				result = twitter.search(query);
-				
 				for(int i=0;i<result.getTweets().size();i++) {
 					List<Status> tweetList = result.getTweets();
 					Status tweetStatus = tweetList.get(i);
@@ -54,17 +48,16 @@ public class TwitterSearch {
 					
 					tweet.put("id", tweetStatus.getId());
 					tweet.put("text", tweetStatus.getText());
+					tweet.put("date", tweetStatus.getCreatedAt());
 					tweets.add(tweet);
 				}
-			}while(query.getSinceId() < query.getMaxId() && result.hasNext());
+			}while(result.hasNext());
 			
 		} catch (TwitterException e) {
 			e.printStackTrace();
 			System.out.println("Failed to search tweets: " + e.getMessage());
 			
 			return tweets;
-		}catch(Exception e) {
-			e.printStackTrace();
 		}
 		return tweets;
 	}

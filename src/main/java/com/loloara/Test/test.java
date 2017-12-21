@@ -1,9 +1,14 @@
 package com.loloara.Test;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Locale;
 import java.util.Properties;
-import java.util.Vector;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -16,15 +21,25 @@ public class test {
 	private static long sinceId = 0L;
 	public static void twitterTest() {
 		TwitterSearch twitter = new TwitterSearch();
-		String query = "꼬따오";
+		String query = "아이유";
 		JSONArray tweets = twitter.runSearchingKeyword(query, sinceId);
-		if(tweets.size() != 0)
+		Date sinceDate = new Date();
+		Date latelyDate = null;
+		
+		if(tweets.size() != 0) {
 			sinceId = (long) ((JSONObject) tweets.get(0)).get("id");
+			latelyDate = (Date) ((JSONObject) tweets.get(0)).get("date");
+			sinceDate = (Date) ((JSONObject) tweets.get(tweets.size()-1)).get("date");
+		}
 
 		for(int i=0;i<tweets.size();i++) {
 			JSONObject tweet = (JSONObject) tweets.get(i);
-			System.out.println("@"+tweet.get("id")+" - "+tweet.get("text"));
+			Date tmp = (Date) tweet.get("date");
+			System.out.println("@"+tweet.get("id")+ "::" + tmp +" - "+tweet.get("text"));
 		}
+		
+		System.out.println("Since: " + sinceDate);
+		System.out.println("Lately: " + latelyDate);
 		System.out.println("tweets length: " + tweets.size());
 		System.out.println("Next SinceId: " + sinceId);
 	}
@@ -71,7 +86,45 @@ public class test {
 	public static void mysqlTest() {
 		System.out.println("MySQL Test");
 		MySQLConn mysql = new MySQLConn();
-		System.out.println("keyword: "+mysql.getKeyword());
+		System.out.println("sinceDate: "+mysql.getKeyword()[3]);
+		SimpleDateFormat sdf= new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy",Locale.US);
+		String str_since = "Fri Dec 08 09:00:07 KST 2017";
+		String str_lately = "Fri Dec 08 10:00:07 KST 2017";
+		Date sinceDate = null;
+		Date latelyDate = null;
+		try {
+			sinceDate = sdf.parse(str_since);
+			latelyDate = sdf.parse(str_lately);
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+		//mysql.updateKeywordHistory(100, 3, 284719823, sinceDate, latelyDate);
+	}
+	
+	public static void calanderTest() {
+		Calendar date1 = new GregorianCalendar();
+		Calendar date2 = new GregorianCalendar();
+		SimpleDateFormat sdf= new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy",Locale.US);
+		try {
+			date1.setTime(sdf.parse("Thu Dec 07 11:22:33 KST 2017"));
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		
+		System.out.println("date1: " + date1.getTime());
+		System.out.println("date2: " + date2.getTime());
+		
+		int com  = date1.compareTo(date2);
+		if(com == 1) {
+			System.out.println("date1이 더 최근");
+		}else if(com == -1){
+			System.out.println("date1이 더 오래됨");
+		}else {
+			System.out.println("같다");
+		}
 	}
 	
 	public static void propertiesTest() {
@@ -84,9 +137,10 @@ public class test {
 	}
 	
 	public static void main(String[] args) {
-		koalaTest();
-		//twitterTest();
+		//koalaTest();
+		twitterTest();
 		//mysqlTest();
 		//propertiesTest();
+		//calanderTest();
 	}
 }

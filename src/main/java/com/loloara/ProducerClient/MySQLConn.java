@@ -5,10 +5,12 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-
+import java.text.SimpleDateFormat;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Date;
+import java.util.Locale;
 import java.util.Properties;
 
 public class MySQLConn {
@@ -49,25 +51,28 @@ public class MySQLConn {
 	}
 	
 	public String[] getKeyword() {
-		String sql1 = "select * from Keyword_History where status = 'y';";
-		String sql2 = "select keyword, seq, sinceId from Keyword_History order by seq desc limit 1000;";
-		String[] keywords = new String[3];
+		SimpleDateFormat sdf= new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy",Locale.US);
+		String sql1 = "select keyword, seq, sinceDate from Keyword_History where status = 'y';";
+		String[] keywords = new String[4];
 		keywords[0] = "test";
 		keywords[1] = "1";
 		keywords[2] = "0";
+		keywords[3] = "0";
 		try {
 			ResultSet rs1 = stmt.executeQuery(sql1);
 			rs1.next();
 			keywords[0] = rs1.getString("keyword");
 			keywords[1] = Integer.toString(rs1.getInt("seq"));
+			keywords[3] = sdf.format(rs1.getTimestamp("sinceDate"));
 			rs1.close();
-			
+		
+			String sql2 = "select keyword, sinceId from Keyword_History where keyword = '" + keywords[0] + "';";
 			ResultSet rs2 = stmt.executeQuery(sql2);
 			while(rs2.next()) {
-				if(keywords[0].equals(rs2.getString("keyword"))) {
-					keywords[2] = Long.toString(rs2.getLong("sinceId"));
-					break;
-				}
+				long pre = Long.parseLong(keywords[2]);
+				long com = rs2.getLong("sinceId");
+				if(pre < com)
+					keywords[2] = Long.toString(com);
 			}
 			rs2.close();
 			
@@ -79,18 +84,33 @@ public class MySQLConn {
 	}
 	
 	
-	public void addCountSinceIdToKeyword(int count, int seq, long sinceId) {
+	public void updateKeywordHistory(int count, int seq, long sinceId, Date sinceDate, Date latelyDate) {
 		StringBuilder sb = new StringBuilder();
-		String sql = sb.append("update KCC_LAB.Keyword_History set tweets = tweets + ")
+		sb.append("update KCC_LAB.Keyword_History set tweets = tweets + ")
 				.append(count)
 				.append(", sinceId = ")
-				.append(sinceId)
-				.append(" WHERE  seq=")
-				.append(seq)
-				.append(";").toString();
+				.append(sinceId);
+		if(sinceDate != null) {
+			java.sql.Timestamp sinceObj = new java.sql.Timestamp(sinceDate.getTime());
+			sb.append(", sinceDate = '")
+			.append(sinceObj)
+			.append("'");
+		}
+		
+		if(latelyDate != null) {
+			java.sql.Timestamp latelyObj = new java.sql.Timestamp(latelyDate.getTime());
+			sb.append(", latelyDate = '")
+			.append(latelyObj)
+			.append("'");
+		}
+		String sql = sb.append(" WHERE  seq=")
+		.append(seq)
+		.append(";").toString();
+		
 		try {
 			stmt.executeUpdate(sql);
 		} catch (SQLException e) {
+			System.out.println("updateKeywordHistory");
 			e.printStackTrace();
 		} finally {
 			try {
